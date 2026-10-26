@@ -21,8 +21,7 @@ spec:
     spec:
       containers:
       - name: simple-flask
-        # image: IMAGE_TAG
-        image: sudkul/simple-flask
+        image: msagardia/simple-flask:v1
         securityContext:
           privileged: false
           readOnlyRootFilesystem: false
