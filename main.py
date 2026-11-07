@@ -68,19 +68,21 @@ def auth():
     Create JWT token based on email.
     """
     request_data = request.get_json()
+    if not isinstance(request_data, dict):
+        return jsonify({"message": "Expected a JSON object"}), 400
     email = request_data.get('email')
     password = request_data.get('password')
     if not email:
         LOG.error("No email provided")
-        return jsonify({"message": "Missing parameter: email"}, 400)
+        return jsonify({"message": "Missing parameter: email"}), 400
     if not password:
         LOG.error("No password provided")
-        return jsonify({"message": "Missing parameter: password"}, 400)
+        return jsonify({"message": "Missing parameter: password"}), 400
     body = {'email': email, 'password': password}
 
     user_data = body
 
-    return jsonify(token=_get_jwt(user_data).decode('utf-8'))
+    return jsonify(token=_get_jwt(user_data))
 
 
 @APP.route('/contents', methods=['GET'])
@@ -94,7 +96,7 @@ def decode_jwt():
     token = str.replace(str(data), 'Bearer ', '')
     try:
         data = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
-    except: # pylint: disable=bare-except
+    except jwt.InvalidTokenError:
         abort(401)
 
 
@@ -105,9 +107,10 @@ def decode_jwt():
 
 
 def _get_jwt(user_data):
-    exp_time = datetime.datetime.utcnow() + datetime.timedelta(weeks=2)
+    now = datetime.datetime.now(datetime.UTC)
+    exp_time = now + datetime.timedelta(weeks=2)
     payload = {'exp': exp_time,
-               'nbf': datetime.datetime.utcnow(),
+               'nbf': now,
                'email': user_data['email']}
     return jwt.encode(payload, JWT_SECRET, algorithm='HS256')
 

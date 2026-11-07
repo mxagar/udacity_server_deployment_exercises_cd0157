@@ -1,88 +1,89 @@
 # Deploying a Flask API
 
-This is the project starter repo for the course Server Deployment, Containerization, and Testing.
+Project starter for the course **Server Deployment, Containerization, and Testing**. Build and test a Flask application locally, then deploy it to Amazon Elastic Kubernetes Service (EKS) using Docker, AWS CodePipeline, and AWS CodeBuild.
 
-In this project you will containerize and deploy a Flask API to a Kubernetes cluster using Docker, AWS EKS, CodePipeline, and CodeBuild.
+## Application
 
-The Flask app that will be used for this project consists of a simple API with three endpoints:
+| Endpoint | Behavior |
+| --- | --- |
+| `GET /` | Returns the JSON string `"Healthy"`; the starter also accepts `POST /`. |
+| `POST /auth` | Accepts an email and password as JSON and returns a signed JSON Web Token (JWT). |
+| `GET /contents` | Accepts `Authorization: Bearer <token>` and returns the verified email, expiration (`exp`), and not-before (`nbf`) claims. Invalid tokens return status 401. |
 
-- `GET '/'`: This is a simple health check, which returns the response 'Healthy'. 
-- `POST '/auth'`: This takes a email and password as json arguments and returns a JWT based on a custom secret.
-- `GET '/contents'`: This requires a valid JWT, and returns the un-encrpyted contents of that token. 
+The app reads `JWT_SECRET` when imported and uses it to sign and verify tokens with HS256. Tokens are encoded, not encrypted. This exercise checks that login fields are present; it does not authenticate against a user database or include the password in the token.
 
-The app relies on a secret set as the environment variable `JWT_SECRET` to produce a JWT. The built-in Flask server is adequate for local development, but not production, so you will be using the production-ready [Gunicorn](https://gunicorn.org/) server when deploying the app.
-
-
+Flask's development server is for local exploration. The Docker image runs the production [Gunicorn](https://gunicorn.org/) Web Server Gateway Interface (WSGI) server as `main:APP` on port 8080.
 
 ## Prerequisites
 
-* Docker Desktop - Installation instructions for all OSes can be found <a href="https://docs.docker.com/install/" target="_blank">here</a>.
-* Git: <a href="https://git-scm.com/downloads" target="_blank">Download and install Git</a> for your system. 
-* Code editor: You can <a href="https://code.visualstudio.com/download" target="_blank">download and install VS code</a> here.
-* AWS Account
-* Python version between 3.7 and 3.9. Check the current version using:
+- [Docker Desktop](https://docs.docker.com/desktop/), [Git](https://git-scm.com/downloads), and an editor such as [Visual Studio Code](https://code.visualstudio.com/download).
+- Python 3.13 and [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.13.7 or newer. Python can be installed by uv or downloaded from [python.org](https://www.python.org/downloads/).
+- A terminal: the default terminal on macOS/Linux; Git Bash or Windows Subsystem for Linux (WSL) on Windows. Gunicorn runs on Windows through WSL or a Linux container.
+- For cloud deployment: an AWS account, [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [eksctl](https://docs.aws.amazon.com/eks/latest/eksctl/installation.html), and [kubectl](https://kubernetes.io/docs/tasks/tools/). Configure the appropriate AWS profile and keep exercise resources in a single supported region, such as `eu-central-1`.
+
+## Initial setup and local run
+
+The original [Udacity starter repository](https://github.com/udacity/cd0157-Server-Deployment-and-Containerization) has been forked here. For a standalone checkout:
+
 ```bash
-#  Mac/Linux/Windows 
-python --version
+git clone https://github.com/mxagar/udacity_server_deployment_exercises_cd0157.git
+cd udacity_server_deployment_exercises_cd0157
+uv python install 3.13
+uv sync --locked
+export JWT_SECRET="$(uv run --locked python -c 'import secrets; print(secrets.token_hex(32))')"
+export LOG_LEVEL=DEBUG
+uv run --locked python main.py
 ```
-You can download a specific release version from <a href="https://www.python.org/downloads/" target="_blank">here</a>.
 
-* Python package manager - PIP 19.x or higher. PIP is already installed in Python 3 >=3.4 downloaded from python.org . However, you can upgrade to a specific version, say 20.2.3, using the command:
+If this repository is already checked out as a submodule, enter that directory and start at `uv python install`. uv creates its own `.venv`; activation is unnecessary. Keep the secret stable for the lifetime of the issued tokens. Logging defaults to `INFO`; `DEBUG` includes the startup debug message. Restart the app after changing its environment settings.
+
+In another terminal:
+
 ```bash
-#  Mac/Linux/Windows Check the current version
-pip --version
-# Mac/Linux
-pip install --upgrade pip==20.2.3
-# Windows
-python -m pip install --upgrade pip==20.2.3
+curl --fail-with-body --silent --show-error http://127.0.0.1:8080/
 ```
-* Terminal
-   * Mac/Linux users can use the default terminal.
-   * Windows users can use either the GitBash terminal or WSL. 
-* Command line utilities:
-  * AWS CLI installed and configured using the `aws configure` command. Another important configuration is the region. Do not use the us-east-1 because the cluster creation may fails mostly in us-east-1. Let's change the default region to:
-  ```bash
-  aws configure set region us-east-2  
-  ```
-  Ensure to create all your resources in a single region. 
-  * EKSCTL installed in your system. Follow the instructions [available here](https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html#installing-eksctl) or <a href="https://eksctl.io/introduction/#installation" target="_blank">here</a> to download and install `eksctl` utility. 
-  * The KUBECTL installed in your system. Installation instructions for kubectl can be found <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/" target="_blank">here</a>. 
 
+It returns `"Healthy"`. Use `Ctrl+C` in the server terminal to stop it.
 
-## Initial setup
+## Dependencies and tests
 
-1. Fork the <a href="https://github.com/udacity/cd0157-Server-Deployment-and-Containerization" target="_blank">Server and Deployment Containerization Github repo</a> to your Github account.
-1. Locally clone your forked version to begin working on the project.
+`pyproject.toml` declares the runtime dependencies (Flask, PyJWT, and Gunicorn) and the development test dependency (pytest). `uv.lock` records exact versions; `.python-version` selects Python 3.13. Docker and CodeBuild use the same project and lockfile.
+
 ```bash
-git clone https://github.com/SudKul/cd0157-Server-Deployment-and-Containerization.git
-cd cd0157-Server-Deployment-and-Containerization/
+uv run --locked pytest
+# After an intentional change to pyproject.toml:
+uv lock
+uv sync --locked
 ```
-1. These are the files relevant for the current project:
-```bash
+
+Commit `pyproject.toml` and `uv.lock` together after dependency changes. PyJWT 2 returns a string from `jwt.encode()`; do not append `.decode('utf-8')`. `jwt.decode()` remains the token-verification API.
+
+## Project files
+
+```text
 .
-├── Dockerfile 
+├── Dockerfile                  # Python 3.13, uv, and Gunicorn
 ├── README.md
-├── aws-auth-patch.yml #ToDo
-├── buildspec.yml      #ToDo
-├── ci-cd-codepipeline.cfn.yml #ToDo
-├── iam-role-policy.json  #ToDo
+├── .python-version
+├── aws-auth-patch.yml           # Sample Kubernetes access mapping to adapt
+├── buildspec.yml               # CodeBuild phases
+├── ci-cd-codepipeline.cfn.yml   # Pipeline infrastructure parameters to complete
+├── iam-role-policy.json        # IAM permissions
 ├── main.py
-├── requirements.txt
+├── pyproject.toml
+├── uv.lock
 ├── simple_jwt_api.yml
-├── test_main.py  #ToDo
-└── trust.json     #ToDo 
+├── test_main.py                 # Regression tests; extend for the project
+└── trust.json                  # IAM trust policy to adapt
 ```
 
-     
-## Project Steps
+## Project steps
 
-Completing the project involves several steps:
+1. Review the Dockerfile for the Flask API and its Gunicorn entry point.
+2. Build and test the container locally, supplying `JWT_SECRET` as a runtime environment variable.
+3. Create an EKS cluster, manually create the IAM role CodeBuild will assume, and configure its Kubernetes access using the exercise's `aws-auth` mapping.
+4. Store the secret using AWS Systems Manager Parameter Store, as described in the project instructions.
+5. Create a CodePipeline pipeline triggered by GitHub commits using the supplied CloudFormation template and a GitHub access token.
+6. Configure CodeBuild to build, test, and deploy the code. The buildspec retains the course's phase and command order, synchronizes dependencies with uv, and uses AWS CLI v2 for ECR login. Set its `KUBECTL_VERSION` variable to a patch release compatible with your cluster's Kubernetes minor version; the example pin is `v1.34.13`.
 
-1. Write a Dockerfile for a simple Flask API
-2. Build and test the container locally
-3. Create an EKS cluster
-4. Store a secret using AWS Parameter Store
-5. Create a CodePipeline pipeline triggered by GitHub checkins
-6. Create a CodeBuild stage which will build, test, and deploy your code
-
-For more detail about each of these steps, see the project lesson.
+For the incremental exercises and submission requirements, follow the course project lesson.
