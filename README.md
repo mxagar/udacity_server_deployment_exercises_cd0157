@@ -84,6 +84,6 @@ Commit `pyproject.toml` and `uv.lock` together after dependency changes. PyJWT 2
 3. Create an EKS cluster, manually create the IAM role CodeBuild will assume, and configure its Kubernetes access using the exercise's `aws-auth` mapping.
 4. Store the secret using AWS Systems Manager Parameter Store, as described in the project instructions.
 5. Create a CodePipeline pipeline triggered by GitHub commits using the supplied CloudFormation template and a GitHub access token.
-6. Configure CodeBuild to build, test, and deploy the code. The buildspec retains the course's phase and command order, synchronizes dependencies with uv, and uses AWS CLI v2 for ECR login. Set its `KUBECTL_VERSION` variable to a patch release compatible with your cluster's Kubernetes minor version; the example pin is `v1.34.13`.
+6. Configure CodeBuild to build, test, and deploy the code. The buildspec retains the course's phase and command order, synchronizes dependencies with uv, and uses AWS CLI v2 for ECR login. Set its `KUBECTL_VERSION` variable to a patch release compatible with your cluster's Kubernetes minor version; the example pin is `v1.37.2` for the project's Kubernetes 1.37 cluster.
 
 For the incremental exercises and submission requirements, follow the course project lesson.
