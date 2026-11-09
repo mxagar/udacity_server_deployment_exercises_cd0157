@@ -46,17 +46,21 @@ phases:
       - echo `ls -l`
       # Replaces pip install -r requirements.txt; includes the pytest development dependency.
       - uv sync --locked
+      - uv run --locked python -m pytest test_main.py
   build:
     commands:
       - docker build --tag $REPOSITORY_URI:$TAG .
 
   post_build:
     commands:
+      # CodeBuild can enter post_build after an earlier failure. Never publish or deploy it.
+      - test "$CODEBUILD_BUILD_SUCCEEDING" = "1"
       - docker push $REPOSITORY_URI:$TAG
       - echo $EKS_CLUSTER_NAME
       - echo $EKS_KUBECTL_ROLE_ARN
       - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --role-arn $EKS_KUBECTL_ROLE_ARN
       - kubectl apply -f simple_jwt_api.yml
+      - kubectl rollout status deployment/simple-jwt-api --namespace default --timeout=180s
       - printf '[{"name":"simple_jwt_api","imageUri":"%s"}]' $REPOSITORY_URI:$TAG > build.json
 artifacts:
   files: build.json
