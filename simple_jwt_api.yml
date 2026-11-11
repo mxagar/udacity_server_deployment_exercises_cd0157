@@ -33,6 +33,7 @@ spec:
         - name: simple-jwt-api
           image: CONTAINER_IMAGE
           env:
+          # JWT_SECRET needs to be set beforehand
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
