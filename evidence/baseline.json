@@ -1,0 +1,31 @@
+{
+  "CapturedAt": "2026-11-11T17:14:07.7599732+01:00",
+  "Commit": "67a0fea95f572af1783bfc2343cac83c8ccd7826",
+  "Image": "077073585279.dkr.ecr.eu-central-1.amazonaws.com/simple-jwt-api-pipeline-ecrdockerrepository-esyamizthgc4:udacity_server_deployment_exercises_cd0157.master..2026-11-11.16.04.27.67a0fea9",
+  "ReadyReplicas": 3,
+  "Revision": "2",
+  "PodUids": [
+    "363e8b0f-6d23-4ba9-b126-f5c9f30189f4",
+    "7f896105-03b0-4251-95b4-eb2338f96e28",
+    "88cbd3cf-37e5-4c86-869b-53ac10652cc2"
+  ],
+  "Endpoint": "http://a801c89a3b3334c9aa490f41d56834f7-6753305.eu-central-1.elb.amazonaws.com",
+  "Health": "Healthy",
+  "Repository": "simple-jwt-api-pipeline-ecrdockerrepository-esyamizthgc4",
+  "EcrImages": [
+    {
+      "Digest": "sha256:19f60148f073ade54f9e071b6014f8361a19b116833251b97ca4b34f4fdc41d5",
+      "Tags": [
+        "udacity_server_deployment_exercises_cd0157.master..2026-11-11.16.04.27.67a0fea9"
+      ],
+      "Pushed": "2026-11-11T17:04:41.252+01:00"
+    },
+    {
+      "Digest": "sha256:e9569412f3be68750aa27d4d3b377fd62220639effe6badbd95166d441953b5f",
+      "Tags": [
+        "udacity_server_deployment_exercises_cd0157.master..2026-11-11.15.59.02.ba5983b8"
+      ],
+      "Pushed": "2026-11-11T16:59:17.498+01:00"
+    }
+  ]
+}

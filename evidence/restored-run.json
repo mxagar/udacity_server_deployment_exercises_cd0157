@@ -1,0 +1,167 @@
+{
+  "CapturedAt": "2026-11-11T17:28:09.4450503+01:00",
+  "Pipeline": {
+    "Id": "b3de9dbe-67cb-4e3f-89bd-4580d985e652",
+    "Status": "Succeeded"
+  },
+  "Build": {
+    "Id": "simple-jwt-api-pipeline:98bb9388-2e29-4b3c-a0f9-7ed56e4f0e65",
+    "Status": "SUCCEEDED",
+    "Commit": "7c9bf6e79b512fe32ccd2cf5e187e2d6f92b9f34",
+    "Started": "2026-11-11T17:25:52.666+01:00",
+    "Ended": "2026-11-11T17:26:53.057+01:00",
+    "Phases": [
+      {
+        "Name": "SUBMITTED",
+        "Status": "SUCCEEDED",
+        "Contexts": null
+      },
+      {
+        "Name": "QUEUED",
+        "Status": "SUCCEEDED",
+        "Contexts": null
+      },
+      {
+        "Name": "PROVISIONING",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "DOWNLOAD_SOURCE",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "INSTALL",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "PRE_BUILD",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "BUILD",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "POST_BUILD",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "UPLOAD_ARTIFACTS",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "FINALIZING",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "COMPLETED",
+        "Status": null,
+        "Contexts": null
+      }
+    ],
+    "LogGroup": "/aws/codebuild/simple-jwt-api-pipeline",
+    "LogStream": "98bb9388-2e29-4b3c-a0f9-7ed56e4f0e65"
+  },
+  "Image": "077073585279.dkr.ecr.eu-central-1.amazonaws.com/simple-jwt-api-pipeline-ecrdockerrepository-esyamizthgc4:udacity_server_deployment_exercises_cd0157.master..2026-11-11.16.26.27.7c9bf6e7",
+  "Revision": "3",
+  "ReadyReplicas": 3,
+  "UpdatedReplicas": 3,
+  "PodUids": [
+    "9e3a1cd3-38b1-4507-b1c9-aa4792785d80",
+    "af483aa1-15cf-4539-9d89-b52996cdf82b",
+    "42a0b517-6af0-4621-99d0-cef4abd697fc"
+  ],
+  "EcrImages": [
+    {
+      "Digest": "sha256:759dd516fe51b8b68d897ca1d6fb391c4253930706647318621f5bcdf97eb881",
+      "Tags": [
+        "udacity_server_deployment_exercises_cd0157.master..2026-11-11.16.26.27.7c9bf6e7"
+      ],
+      "Pushed": "2026-11-11T17:26:42.106+01:00"
+    },
+    {
+      "Digest": "sha256:19f60148f073ade54f9e071b6014f8361a19b116833251b97ca4b34f4fdc41d5",
+      "Tags": [
+        "udacity_server_deployment_exercises_cd0157.master..2026-11-11.16.04.27.67a0fea9"
+      ],
+      "Pushed": "2026-11-11T17:04:41.252+01:00"
+    },
+    {
+      "Digest": "sha256:e9569412f3be68750aa27d4d3b377fd62220639effe6badbd95166d441953b5f",
+      "Tags": [
+        "udacity_server_deployment_exercises_cd0157.master..2026-11-11.15.59.02.ba5983b8"
+      ],
+      "Pushed": "2026-11-11T16:59:17.498+01:00"
+    }
+  ],
+  "Endpoint": "http://a801c89a3b3334c9aa490f41d56834f7-6753305.eu-central-1.elb.amazonaws.com",
+  "Checks": {
+    "MissingTokenStatus": 401,
+    "Health": "Healthy",
+    "InvalidTokenStatus": 401,
+    "Contents": "Verified email/exp/nbf, token omitted",
+    "Auth": "Token issued, value omitted"
+  },
+  "Logs": [
+    "total 60528 -rw-rw-r-- 1 root root 42 Nov 11 16:24 CODEOWNERS -rw-rw-r-- 1 root root 835 Nov 11 16:24 Dockerfile -rwxrwxr-x 1 root root 5471 Nov 11 16:24 README.md -rw-rw-r-- 1 root root 597 Nov 11 16:24 aws-auth-patch.yml -rw-rw-r-- 1 root root 3881 Nov 11 16:24 buildspec.yml -rwxrwxr-x 1 root root 12048 Nov 11 16:24 ci-cd-codepipeline.cfn.yml drwxr-xr-x 7 root root 101 Nov 11 16:26 examples -rw-rw-r-- 1 root root 167 Nov 11 16:24 iam-role-policy.json -rwxr-xr-x 1 root root 61890722 Nov 11 16:26 kubectl -rw-r--r-- 1 root root 64 Nov 11 16:26 kubectl.sha256 -rwxrwxr-x 1 root root 3102 Nov 11 16:24 main.py -rw-rw-r-- 1 root root 373 Nov 11 16:24 pyproject.toml -rw-rw-r-- 1 root root 1319 Nov 11 16:26 simple_jwt_api.yml -rw-rw-r-- 1 root root 2590 Nov 11 16:24 test_main.py -rw-rw-r-- 1 root root 246 Nov 11 16:24 trust.json -rw-rw-r-- 1 root root 17727 Nov 11 16:24 uv.lock\n",
+    "[Container] 2026/11/11 16:26:29.757646 Running command uv run --locked python -m pytest test_main.py\n",
+    "test_main.py ...........                                                 [100%]\n",
+    "============================== 11 passed in 0.84s ==============================\n",
+    "[Container] 2026/11/11 16:26:33.018019 Phase complete: PRE_BUILD State: SUCCEEDED\n",
+    "[Container] 2026/11/11 16:26:37.597268 Phase complete: BUILD State: SUCCEEDED\n",
+    "[Container] 2026/11/11 16:26:37.630637 Running command test \"$CODEBUILD_BUILD_SUCCEEDING\" = \"1\"\n",
+    "[Container] 2026/11/11 16:26:37.638117 Running command docker push $REPOSITORY_URI:$TAG\n",
+    "[Container] 2026/11/11 16:26:42.947147 Running command kubectl apply -f simple_jwt_api.yml\n",
+    "[Container] 2026/11/11 16:26:43.707980 Running command kubectl rollout status deployment/simple-jwt-api --namespace default --timeout=180s\n",
+    "deployment \"simple-jwt-api\" successfully rolled out\n",
+    "[Container] 2026/11/11 16:26:52.584219 Phase complete: POST_BUILD State: SUCCEEDED\n"
+  ]
+}

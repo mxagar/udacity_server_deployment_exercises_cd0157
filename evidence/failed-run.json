@@ -1,0 +1,123 @@
+{
+  "CapturedAt": "2026-11-11T17:23:12.1482389+01:00",
+  "Pipeline": {
+    "Id": "8dfc1287-f54e-4bce-af0d-63ebe861a0fd",
+    "Status": "Failed"
+  },
+  "Build": {
+    "Id": "simple-jwt-api-pipeline:f7ce2d8b-cd12-44a3-918b-49214350f96f",
+    "Status": "FAILED",
+    "Commit": "d01c8400093f7a11ba43112d6b20ee62eca91dc5",
+    "Started": "2026-11-11T17:19:52.632+01:00",
+    "Ended": "2026-11-11T17:20:32.036+01:00",
+    "Phases": [
+      {
+        "Name": "SUBMITTED",
+        "Status": "SUCCEEDED",
+        "Contexts": null
+      },
+      {
+        "Name": "QUEUED",
+        "Status": "SUCCEEDED",
+        "Contexts": null
+      },
+      {
+        "Name": "PROVISIONING",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "DOWNLOAD_SOURCE",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "INSTALL",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "PRE_BUILD",
+        "Status": "FAILED",
+        "Contexts": [
+          {
+            "statusCode": "COMMAND_EXECUTION_ERROR",
+            "message": "Error while executing command: uv run --locked python -m pytest test_main.py. Reason: exit status 1"
+          }
+        ]
+      },
+      {
+        "Name": "FINALIZING",
+        "Status": "SUCCEEDED",
+        "Contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "Name": "COMPLETED",
+        "Status": null,
+        "Contexts": null
+      }
+    ],
+    "LogGroup": "/aws/codebuild/simple-jwt-api-pipeline",
+    "LogStream": "f7ce2d8b-cd12-44a3-918b-49214350f96f"
+  },
+  "Image": "077073585279.dkr.ecr.eu-central-1.amazonaws.com/simple-jwt-api-pipeline-ecrdockerrepository-esyamizthgc4:udacity_server_deployment_exercises_cd0157.master..2026-11-11.16.04.27.67a0fea9",
+  "Revision": "2",
+  "ReadyReplicas": 3,
+  "PodUids": [
+    "363e8b0f-6d23-4ba9-b126-f5c9f30189f4",
+    "7f896105-03b0-4251-95b4-eb2338f96e28",
+    "88cbd3cf-37e5-4c86-869b-53ac10652cc2"
+  ],
+  "EcrImages": [
+    {
+      "Digest": "sha256:19f60148f073ade54f9e071b6014f8361a19b116833251b97ca4b34f4fdc41d5",
+      "Tags": [
+        "udacity_server_deployment_exercises_cd0157.master..2026-11-11.16.04.27.67a0fea9"
+      ],
+      "Pushed": "2026-11-11T17:04:41.252+01:00"
+    },
+    {
+      "Digest": "sha256:e9569412f3be68750aa27d4d3b377fd62220639effe6badbd95166d441953b5f",
+      "Tags": [
+        "udacity_server_deployment_exercises_cd0157.master..2026-11-11.15.59.02.ba5983b8"
+      ],
+      "Pushed": "2026-11-11T16:59:17.498+01:00"
+    }
+  ],
+  "Health": "Healthy",
+  "ImagePublicationBlocked": true,
+  "DeploymentUnchanged": true,
+  "Logs": [
+    "total 60528 -rw-rw-r-- 1 root root 42 Nov 11 16:14 CODEOWNERS -rw-rw-r-- 1 root root 835 Nov 11 16:14 Dockerfile -rwxrwxr-x 1 root root 5471 Nov 11 16:14 README.md -rw-rw-r-- 1 root root 597 Nov 11 16:14 aws-auth-patch.yml -rw-rw-r-- 1 root root 3881 Nov 11 16:14 buildspec.yml -rwxrwxr-x 1 root root 12048 Nov 11 16:14 ci-cd-codepipeline.cfn.yml drwxr-xr-x 7 root root 101 Nov 11 16:20 examples -rw-rw-r-- 1 root root 167 Nov 11 16:14 iam-role-policy.json -rwxr-xr-x 1 root root 61890722 Nov 11 16:20 kubectl -rw-r--r-- 1 root root 64 Nov 11 16:20 kubectl.sha256 -rwxrwxr-x 1 root root 3102 Nov 11 16:14 main.py -rw-rw-r-- 1 root root 373 Nov 11 16:14 pyproject.toml -rw-rw-r-- 1 root root 1319 Nov 11 16:20 simple_jwt_api.yml -rw-rw-r-- 1 root root 2657 Nov 11 16:14 test_main.py -rw-rw-r-- 1 root root 246 Nov 11 16:14 trust.json -rw-rw-r-- 1 root root 17727 Nov 11 16:14 uv.lock\n",
+    "[Container] 2026/11/11 16:20:28.203588 Running command uv run --locked python -m pytest test_main.py\n",
+    "test_main.py F..........                                                 [100%]\n",
+    ">       assert False, \"Intentional check: this commit must not deploy\"\n",
+    "E       AssertionError: Intentional check: this commit must not deploy\n",
+    "test_main.py:26: AssertionError\n",
+    "FAILED test_main.py::test_health - AssertionError: Intentional check: this co...\n",
+    "========================= 1 failed, 10 passed in 0.94s =========================\n",
+    "[Container] 2026/11/11 16:20:31.745062 Command did not exit successfully uv run --locked python -m pytest test_main.py exit status 1\n",
+    "[Container] 2026/11/11 16:20:31.748717 Phase complete: PRE_BUILD State: FAILED\n",
+    "[Container] 2026/11/11 16:20:31.748728 Phase context status code: COMMAND_EXECUTION_ERROR Message: Error while executing command: uv run --locked python -m pytest test_main.py. Reason: exit status 1\n"
+  ]
+}
