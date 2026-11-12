@@ -110,7 +110,9 @@ uv sync --locked
 
 Commit `pyproject.toml` and `uv.lock` together after dependency changes. PyJWT 2 returns a string from `jwt.encode()`; do not append `.decode('utf-8')`. `jwt.decode()` remains the token-verification API.
 
-The course submission passed before this runtime restoration. [SUBMISSION.md](./SUBMISSION.md) and the `resubmission-*` evidence preserve the accepted legacy snapshot. The current Python 3.13/uv verification is recorded separately in [runtime test output](./evidence/python313-uv-runtime-tests.txt), [local checks](./evidence/python313-uv-local-checks.json), and the companion guide's project activity log.
+The course submission passed before this runtime restoration. [SUBMISSION.md](./SUBMISSION.md) and the `resubmission-*` evidence preserve the accepted legacy snapshot. The current Python 3.13/uv verification is recorded separately in [runtime test output](./evidence/python313-uv-runtime-tests.txt), [local checks](./evidence/python313-uv-local-checks.json), [cloud deployment evidence](./evidence/python313-uv-2026-11-12.json), and the companion guide's project activity log.
+
+On **2026-11-12 at 15:18 Europe/Budapest**, application commit `8794a65d681eeeedd59f3f149034e77facc64554` passed pipeline `c5d9124c-e808-4a92-993a-471784faacb5`. CodeBuild passed 14 host tests and 14 image tests; EKS had three updated/ready/available replicas. The running image reported Python 3.13.18 and uv 0.13.7. Public health/auth/contents checks passed; missing and invalid tokens returned 401. Subsequent evidence/documentation commits contain the same application and deployment configuration.
 
 ## Project files
 

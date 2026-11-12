@@ -1,0 +1,103 @@
+{
+  "CheckedAt": "2026-11-12T15:18:41.8446053+01:00",
+  "ApplicationCommit": "8794a65d681eeeedd59f3f149034e77facc64554",
+  "Pipeline": {
+    "Id": "c5d9124c-e808-4a92-993a-471784faacb5",
+    "Status": "Succeeded",
+    "Revisions": [
+      "8794a65d681eeeedd59f3f149034e77facc64554"
+    ]
+  },
+  "Build": {
+    "Id": "simple-jwt-api-pipeline:035779e3-4b75-45bd-a9dc-b82d4ae77e8a",
+    "Status": "SUCCEEDED",
+    "Commit": "8794a65d681eeeedd59f3f149034e77facc64554",
+    "Started": "2026-11-12T15:16:17.199+01:00",
+    "Ended": "2026-11-12T15:17:27.631+01:00",
+    "LogGroup": "/aws/codebuild/simple-jwt-api-pipeline",
+    "LogStream": "035779e3-4b75-45bd-a9dc-b82d4ae77e8a",
+    "Phases": [
+      {
+        "Name": "SUBMITTED",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "QUEUED",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "PROVISIONING",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "DOWNLOAD_SOURCE",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "INSTALL",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "PRE_BUILD",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "BUILD",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "POST_BUILD",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "UPLOAD_ARTIFACTS",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "FINALIZING",
+        "Status": "SUCCEEDED"
+      },
+      {
+        "Name": "COMPLETED",
+        "Status": null
+      }
+    ]
+  },
+  "SelectedBuildLogMessages": [
+    "platform linux -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0\n",
+    "============================== 14 passed in 1.51s ==============================\n",
+    "[Container] 2026/11/12 14:17:02.564120 Phase complete: PRE_BUILD State: SUCCEEDED\n",
+    "#2 [internal] load metadata for docker.io/library/python:3.13-slim\n",
+    "#2 [internal] load metadata for docker.io/library/python:3.13-slim\n",
+    "#6 [stage-0 1/6] FROM docker.io/library/python:3.13-slim@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90\n",
+    "#6 resolve docker.io/library/python:3.13-slim@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90 0.0s done\n",
+    "#6 [stage-0 1/6] FROM docker.io/library/python:3.13-slim@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90\n",
+    "[Container] 2026/11/12 14:17:07.388325 Running command docker run --rm --entrypoint sh --mount \"type=bind,source=$PWD/test_main.py,target=/app/test_main.py,readonly\" \"$REPOSITORY_URI:$TAG\" -c 'uv sync --locked && uv run --locked python -m pytest /app/test_main.py'\n",
+    "platform linux -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0\n",
+    "============================== 14 passed in 2.62s ==============================\n",
+    "[Container] 2026/11/12 14:17:11.753733 Phase complete: BUILD State: SUCCEEDED\n",
+    "[Container] 2026/11/12 14:17:17.345950 Running command kubectl apply -f simple_jwt_api.yml\n",
+    "[Container] 2026/11/12 14:17:18.257261 Running command kubectl rollout status deployment/simple-jwt-api --namespace default --timeout=180s\n",
+    "deployment \"simple-jwt-api\" successfully rolled out\n",
+    "[Container] 2026/11/12 14:17:27.175759 Phase complete: POST_BUILD State: SUCCEEDED\n"
+  ],
+  "Deployment": {
+    "Image": "077073585279.dkr.ecr.eu-central-1.amazonaws.com/simple-jwt-api-pipeline-ecrdockerrepository-esyamizthgc4:udacity_server_deployment_exercises_cd0157.master..2026-11-12.14.16.55.8794a65d",
+    "Name": "simple-jwt-api",
+    "Python": "Python 3.13.18",
+    "Namespace": "default",
+    "UpdatedReplicas": 3,
+    "Uv": "uv 0.13.7 (x86_64-unknown-linux-musl)",
+    "AvailableReplicas": 3,
+    "ReadyReplicas": 3
+  },
+  "API": {
+    "BaseUrl": "http://a801c89a3b3334c9aa490f41d56834f7-6753305.eu-central-1.elb.amazonaws.com",
+    "AuthTokenIssued": true,
+    "ContentsClaimsVerified": true,
+    "InvalidTokenStatus": 401,
+    "MissingTokenStatus": 401,
+    "Health": "Healthy"
+  },
+  "SecretHandling": "Existing Kubernetes Secret reference retained; no secret/token values recorded"
+}
