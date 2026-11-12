@@ -2,16 +2,51 @@
 
 import datetime
 import json
+import os
+from pathlib import Path
+import subprocess
+import sys
 
 import jwt
 import pytest
 
-import main
-
-
 SECRET = "local-test-secret-at-least-32-bytes-long"
 EMAIL = "wolf@thedoor.com"
 PASSWORD = "huff-puff"
+
+# The app requires an explicitly configured secret at import/startup.
+os.environ.setdefault("JWT_SECRET", SECRET)
+import main
+
+
+@pytest.mark.parametrize("secret", [None, ""])
+def test_startup_rejects_missing_or_empty_signing_secret(secret):
+    environment = os.environ.copy()
+    environment.pop("JWT_SECRET", None)
+    if secret is not None:
+        environment["JWT_SECRET"] = secret
+    result = subprocess.run(
+        [sys.executable, "-c", "import main"],
+        cwd=Path(__file__).parent,
+        env=environment,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode != 0
+    assert "JWT_SECRET" in result.stderr
+
+
+def test_startup_accepts_explicit_signing_secret():
+    environment = os.environ.copy()
+    environment["JWT_SECRET"] = SECRET
+    result = subprocess.run(
+        [sys.executable, "-c", "import main"],
+        cwd=Path(__file__).parent,
+        env=environment,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 @pytest.fixture
@@ -65,7 +100,7 @@ def test_contents_requires_authorization(client):
 
 @pytest.mark.parametrize("kind", ["malformed", "wrong-signature", "expired"])
 def test_contents_rejects_invalid_tokens(client, kind):
-    now = datetime.datetime.now(datetime.UTC)
+    now = datetime.datetime.now(datetime.timezone.utc)
     if kind == "malformed":
         token = "not-a-jwt"
     else:

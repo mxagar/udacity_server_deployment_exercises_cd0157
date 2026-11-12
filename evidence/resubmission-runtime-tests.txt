@@ -1,0 +1,8 @@
+============================= test session starts ==============================
+platform linux -- Python 3.7.4, pytest-7.4.4, pluggy-1.2.0
+rootdir: /app
+collected 14 items
+
+test_main.py ..............                                              [100%]
+
+============================== 14 passed in 3.03s ==============================

@@ -1,20 +1,17 @@
-# Use the same Python 3.13 runtime as the local environment and CodeBuild.
-FROM python:3.13-slim
+# Literal historical course rubric. This tag contains Python 3.7.4 on Debian Stretch.
+# Use for this compatibility exercise; the OS and Python runtime are end-of-life.
+FROM python:stretch
 
-# Copy the pinned uv executable into the image.
-COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
-# Disable bytecode files, stream logs immediately, and use the image's Python and project environment.
+# Disable bytecode files and stream logs immediately.
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    UV_PYTHON_DOWNLOADS=never \
-    PATH="/app/.venv/bin:$PATH"
+    PYTHONUNBUFFERED=1
 
-# Set up an app directory for the code and install locked runtime dependencies.
 WORKDIR /app
-COPY pyproject.toml uv.lock ./
-RUN uv sync --locked --no-dev --no-cache
-# Copy the application after dependencies so code changes can reuse their cached layer.
+# pip 24.0 supports Python 3.7; requirements.txt pins compatible application dependencies.
+COPY requirements.txt ./
+RUN python -m pip install --no-cache-dir pip==24.0 \
+    && python -m pip install --no-cache-dir -r requirements.txt
 COPY main.py .
 
-# Run the Flask application with the Gunicorn WSGI server on container port 8080.
+# Keep the rubric's exact Gunicorn entry point.
 ENTRYPOINT ["gunicorn", "-b", ":8080", "main:APP"]

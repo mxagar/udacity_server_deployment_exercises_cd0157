@@ -1,0 +1,14 @@
+{
+  "VerifiedAt": "2026-11-12T12:52:02.0028631+01:00",
+  "BaseImage": "python:stretch",
+  "Python": "3.7.4",
+  "Image": "simple-flask-project:review-fixes",
+  "LocalEndpoint": "http://127.0.0.1:18081",
+  "Health": "Healthy",
+  "Auth": "Token issued; token omitted",
+  "Contents": "email/exp/nbf verified",
+  "MissingToken": 401,
+  "InvalidToken": 401,
+  "RuntimeTests": 14,
+  "RealSecretRecorded": false
+}

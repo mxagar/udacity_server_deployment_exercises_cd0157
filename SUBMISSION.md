@@ -2,6 +2,14 @@
 
 This submission provides a Flask JWT API deployed on EKS through a GitHub-triggered CodePipeline/CodeBuild workflow. The implementation, live verification results, and declared differences from the historical course instructions are summarized below.
 
+## Changes addressing review feedback
+
+- The Dockerfile now literally uses `FROM python:stretch`, installs pinned dependencies from `requirements.txt` with pip, and retains the exact required Gunicorn entry point. The image's Python 3.7.4 runtime passes all 14 regression tests.
+- [.env.example](./.env.example) is included as the file-based local configuration template. The [README's local setup](./README.md#create-the-local-environment-file) explains creating a private `.env`, generating a local signing secret, and starting Docker with `--env-file .env`. No production secret is included. Missing or empty `JWT_SECRET` now causes a clear startup error instead of using a fallback.
+- CodeBuild tests both its host environment and the actual Stretch container before publishing. The extra startup tests cover missing, empty, and explicitly configured secrets.
+- The ELB URL below returned HTTP 200 on 2026-11-12 and the load balancer is internet-facing. Updated deployment results are being recorded for this resubmission; the original 2026-11-11 gate evidence remains historical evidence.
+- No video recording is provided. The rubric reproduced in the project guide requires endpoint behavior and deployment evidence, but does not list a recording requirement; verification uses the live API and linked logs/results.
+
 ## Implementation and live API
 
 - Repository: https://github.com/mxagar/udacity_server_deployment_exercises_cd0157
@@ -49,10 +57,11 @@ The local `.env`, signing secret, decrypted Parameter Store values, and raw Kube
 
 Both pushes automatically triggered CodePipeline. The temporary failing assertion was removed; the final source is passing. `buildspec.yml` runs pytest before image build and places the `CODEBUILD_BUILD_SUCCEEDING` guard before publication/deployment in `post_build`.
 
-## Declared differences from the historical rubric
+## Rubric alignment and runtime notes
 
-- **Base-image substitution:** `python:3.13-slim` replaces the original rubric's `python:stretch`, following the updated guide's Python 3.13 runtime. This is an explicit difference from the historical image requirement. The exact Gunicorn entry point `["gunicorn", "-b", ":8080", "main:APP"]` is preserved, dependencies install, and the required endpoint checks pass. Please take this declared substitution into account during review.
-- **Dependencies:** Python 3.13 with `pyproject.toml`, `uv.lock`, and uv replaces the older pip/`requirements.txt` workflow. Docker installs locked runtime dependencies; CodeBuild installs pytest and runs `uv run --locked python -m pytest test_main.py`.
-- **Compatibility updates:** current Flask/PyJWT APIs, AWS CLI v2, EKS 1.37, kubectl 1.37.2, and CodeBuild `aws/codebuild/standard:8.0` are used in `eu-central-1`. The required API and GitHub → CodePipeline → CodeBuild → ECR → EKS flow remain intact.
+- **Docker requirements now match the literal rubric:** `FROM python:stretch`; pip installation from `requirements.txt`; entry point `["gunicorn", "-b", ":8080", "main:APP"]`. The previous `python:3.13-slim`/uv-in-Docker substitutions have been removed.
+- **Pinned compatibility dependencies:** Flask 2.2.5, PyJWT 2.8.0, and Gunicorn 23.0.0 support the historical Python 3.7.4 runtime. `requirements.txt` and `requirements-dev.txt` are exported from `uv.lock`; host tooling can still use Python 3.13/uv. CodeBuild runs the 14-case suite in both environments, including inside the real runtime image.
+- **Legacy scope:** Debian Stretch and Python 3.7 are end-of-life. They are used here specifically to satisfy the course's historical Docker requirement, rather than as a current production-runtime recommendation.
+- **AWS settings:** AWS CLI v2, EKS 1.37, kubectl 1.37.2, and CodeBuild `aws/codebuild/standard:8.0` are used in `eu-central-1`. The required API and GitHub → CodePipeline → CodeBuild → ECR → EKS flow remain intact.
 - **Local names:** `.env`, image `simple-flask-project`, and container `simple-flask-container` replace illustrative names.
 - **Additions:** Kubernetes Secret delivery, HTTP readiness checks, the failed-build publication guard, and rollout verification support the required deployment behavior. Optional extra API endpoints and custom failure alerts were not implemented.

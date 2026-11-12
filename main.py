@@ -12,7 +12,9 @@ import jwt
 from flask import Flask, jsonify, request, abort
 
 
-JWT_SECRET = os.environ.get('JWT_SECRET', 'abc123abc1234')
+JWT_SECRET = os.environ.get('JWT_SECRET')
+if not JWT_SECRET:
+    raise RuntimeError('JWT_SECRET must be set before starting the application')
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
 
 
@@ -107,7 +109,7 @@ def decode_jwt():
 
 
 def _get_jwt(user_data):
-    now = datetime.datetime.now(datetime.UTC)
+    now = datetime.datetime.now(datetime.timezone.utc)
     exp_time = now + datetime.timedelta(weeks=2)
     payload = {'exp': exp_time,
                'nbf': now,

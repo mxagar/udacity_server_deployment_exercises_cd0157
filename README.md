@@ -17,37 +17,89 @@ Flask's development server is for local exploration. The Docker image runs the p
 ## Prerequisites
 
 - [Docker Desktop](https://docs.docker.com/desktop/), [Git](https://git-scm.com/downloads), and an editor such as [Visual Studio Code](https://code.visualstudio.com/download).
-- Python 3.13 and [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.13.7 or newer. Python can be installed by uv or downloaded from [python.org](https://www.python.org/downloads/).
-- A terminal: the default terminal on macOS/Linux; Git Bash or Windows Subsystem for Linux (WSL) on Windows. Gunicorn runs on Windows through WSL or a Linux container.
+- Python 3.13 and [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.13.7 or newer for host-side development/CodeBuild. The rubric-compatible Docker image uses Python 3.7.4 from `python:stretch`; the application and pinned requirements support that runtime too.
+- A terminal: Bash on macOS/Linux or Git Bash/WSL; PowerShell is also supported below. Gunicorn runs on Windows through WSL or a Linux container.
 - For cloud deployment: an AWS account, [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [eksctl](https://docs.aws.amazon.com/eks/latest/eksctl/installation.html), and [kubectl](https://kubernetes.io/docs/tasks/tools/). Configure the appropriate AWS profile and keep exercise resources in a single supported region, such as `eu-central-1`.
 
 ## Initial setup and local run
 
 The original [Udacity starter repository](https://github.com/udacity/cd0157-Server-Deployment-and-Containerization) has been forked here. For a standalone checkout:
 
-```bash
+```text
+# Bash or PowerShell
 git clone https://github.com/mxagar/udacity_server_deployment_exercises_cd0157.git
 cd udacity_server_deployment_exercises_cd0157
 uv python install 3.13
 uv sync --locked
-export JWT_SECRET="$(uv run --locked python -c 'import secrets; print(secrets.token_hex(32))')"
-export LOG_LEVEL=DEBUG
+```
+
+If this repository is already checked out as a submodule, enter that directory and start at `uv python install`. uv creates its own `.venv`; activation is unnecessary.
+
+### Create the local environment file
+
+The committed [.env.example](./.env.example) is the file-based configuration template included in the submission archive. The real `.env` remains local and ignored. Copy the template only if you do not already have `.env`:
+
+```text
+# Bash
+if [ ! -e .env ]; then cp .env.example .env; fi
+
+# PowerShell
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+```
+
+For a new file, generate a random local secret with `uv run --locked python -c 'import secrets; print(secrets.token_hex(32))'`, then replace the `JWT_SECRET` placeholder in `.env` with that value. Keep the value private; do not include the generation output in shared logs. Use plain `KEY=value` lines without surrounding quotes. Retain an existing secret on subsequent starts. A missing or empty `JWT_SECRET` now raises a clear startup error; there is no hard-coded fallback.
+
+### Run the container
+
+These commands are identical in Bash and PowerShell:
+
+```text
+# Bash or PowerShell — from the repository root.
+docker build -t simple-flask-project .
+docker run --rm --name simple-flask-container --env-file .env -p 127.0.0.1:8080:8080 simple-flask-project
+```
+
+Leave the server running and use a second terminal for requests. The container reads the actual `.env` at startup; its secret is not copied into the image. `docker stop simple-flask-container` stops this example and `--rm` removes it. If a container with that name already exists, inspect/reuse or stop/remove it before creating another.
+
+### Run directly on the host
+
+The app does not read `.env` automatically. Load the two settings before starting it:
+
+```text
+# Bash
+set -a
+source .env
+set +a
+uv run --locked python main.py
+
+# PowerShell
+Get-Content .env | ForEach-Object {
+    if ($_ -match '^(JWT_SECRET|LOG_LEVEL)=(.*)$') {
+        [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2], 'Process')
+    }
+}
 uv run --locked python main.py
 ```
 
-If this repository is already checked out as a submodule, enter that directory and start at `uv python install`. uv creates its own `.venv`; activation is unnecessary. Keep the secret stable for the lifetime of the issued tokens. Logging defaults to `INFO`; `DEBUG` includes the startup debug message. Restart the app after changing its environment settings.
+Logging defaults to `INFO`; `DEBUG` includes the startup debug message. Restart the app after changing environment settings. Restarting with the same secret preserves unexpired JWTs; changing it invalidates tokens signed with the previous value.
 
 In another terminal:
 
-```bash
+```text
+# Bash
 curl --fail-with-body --silent --show-error http://127.0.0.1:8080/
+
+# PowerShell
+Invoke-RestMethod -Uri 'http://127.0.0.1:8080/'
 ```
 
 It returns `"Healthy"`. Use `Ctrl+C` in the server terminal to stop it.
 
 ## Dependencies and tests
 
-`pyproject.toml` declares the runtime dependencies (Flask, PyJWT, and Gunicorn) and the development test dependency (pytest). `uv.lock` records exact versions; `.python-version` selects Python 3.13. Docker and CodeBuild use the same project and lockfile.
+`pyproject.toml` and `uv.lock` pin Python 3.7-compatible dependencies; `.python-version` selects Python 3.13 for host tooling. Docker literally uses `FROM python:stretch`, installs pinned [requirements.txt](./requirements.txt) with pip, and keeps `["gunicorn", "-b", ":8080", "main:APP"]`. The Stretch/Python 3.7 image is end-of-life and is retained here specifically for the historical course rubric.
+
+[requirements-dev.txt](./requirements-dev.txt) adds the test tools. Both requirements files are exported from the same lock; CodeBuild runs the suite on its host Python and in a disposable container using the actual Stretch application image before publication.
 
 ```bash
 uv run --locked pytest
@@ -58,11 +110,21 @@ uv sync --locked
 
 Commit `pyproject.toml` and `uv.lock` together after dependency changes. PyJWT 2 returns a string from `jwt.encode()`; do not append `.decode('utf-8')`. `jwt.decode()` remains the token-verification API.
 
+Regenerate the committed requirements files after changing the lock (Bash or PowerShell):
+
+```text
+uv export --locked --no-dev --no-hashes --no-header --no-annotate --no-emit-project --output-file requirements.txt
+uv export --locked --no-hashes --no-header --no-annotate --no-emit-project --output-file requirements-dev.txt
+```
+
+Reviewer-facing results and live API instructions are in [SUBMISSION.md](./SUBMISSION.md). A video recording is not required by the rubric reproduced in the companion guide; this submission uses the live URL and sanitized build/deployment evidence.
+
 ## Project files
 
 ```text
 .
-├── Dockerfile                  # Python 3.13, uv, and Gunicorn
+├── Dockerfile                  # Literal python:stretch, pip requirements, Gunicorn
+├── .env.example                # Safe file-based local configuration template
 ├── README.md
 ├── .python-version
 ├── aws-auth-patch.yml           # Sample Kubernetes access mapping to adapt
@@ -71,6 +133,8 @@ Commit `pyproject.toml` and `uv.lock` together after dependency changes. PyJWT 2
 ├── iam-role-policy.json        # IAM permissions
 ├── main.py
 ├── pyproject.toml
+├── requirements.txt            # Pinned Python 3.7-compatible runtime requirements
+├── requirements-dev.txt        # Pinned requirements plus pytest
 ├── uv.lock
 ├── simple_jwt_api.yml
 ├── test_main.py                 # Regression tests; extend for the project
