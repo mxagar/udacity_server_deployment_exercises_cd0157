@@ -1,17 +1,17 @@
-# Literal historical course rubric. This tag contains Python 3.7.4 on Debian Stretch.
-# Use for this compatibility exercise; the OS and Python runtime are end-of-life.
-FROM python:stretch
+# Post-approval runtime: match Python 3.13 used locally and in CodeBuild.
+FROM python:3.13-slim
 
-# Disable bytecode files and stream logs immediately.
+# Pin uv and install the project's locked runtime dependencies without pip.
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    UV_PYTHON_DOWNLOADS=never \
+    PATH="/app/.venv/bin:$PATH"
 
 WORKDIR /app
-# pip 24.0 supports Python 3.7; requirements.txt pins compatible application dependencies.
-COPY requirements.txt ./
-RUN python -m pip install --no-cache-dir pip==24.0 \
-    && python -m pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev --no-cache
 COPY main.py .
 
-# Keep the rubric's exact Gunicorn entry point.
+# Preserve the Gunicorn app and port contract.
 ENTRYPOINT ["gunicorn", "-b", ":8080", "main:APP"]

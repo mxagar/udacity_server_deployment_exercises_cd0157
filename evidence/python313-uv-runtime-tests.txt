@@ -1,0 +1,19 @@
+Resolved 16 packages in 2ms
+Downloading pygments (1.2MiB)
+ Downloaded pygments
+Prepared 5 packages in 1.87s
+Installed 5 packages in 40ms
+ + iniconfig==2.3.1
+ + packaging==26.3
+ + pluggy==1.7.0
+ + pygments==2.21.0
+ + pytest==9.2.0
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0
+rootdir: /app
+configfile: pyproject.toml
+collected 14 items
+
+test_main.py ..............                                              [100%]
+
+============================== 14 passed in 3.85s ==============================

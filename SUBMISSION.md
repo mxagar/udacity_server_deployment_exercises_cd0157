@@ -1,5 +1,7 @@
 # Reviewer notes: Deploy Your Flask App to Kubernetes Using EKS
 
+> **Accepted submission history (2026-11-12).** The project passed review with the legacy implementation described below. After approval, Python 3.13 and uv-only dependency management were restored at the owner's request. These notes and the `resubmission-*` evidence describe the accepted snapshot, not the current runtime. See the [current README](./README.md#dependencies-and-tests) and `python313-uv-*` evidence for subsequent verification. The accepted source remains available at the recorded commits.
+
 This submission provides a Flask JWT API deployed on EKS through a GitHub-triggered CodePipeline/CodeBuild workflow. The implementation, live verification results, and declared differences from the historical course instructions are summarized below.
 
 ## Changes addressing review feedback

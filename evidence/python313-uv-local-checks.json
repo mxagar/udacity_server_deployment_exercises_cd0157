@@ -1,0 +1,14 @@
+{
+  "CheckedAt": "2026-11-12T15:11:23.0418326+01:00",
+  "Image": "simple-flask-project:python313",
+  "Python": "3.13.18",
+  "Uv": "0.13.7",
+  "HostTests": 14,
+  "RuntimeTests": 14,
+  "Health": "Healthy",
+  "AuthTokenIssued": true,
+  "ContentsClaimsVerified": true,
+  "MissingTokenStatus": 401,
+  "InvalidTokenStatus": 401,
+  "SecretSource": "Existing ignored .env; contents not recorded"
+}

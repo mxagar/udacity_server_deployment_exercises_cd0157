@@ -44,20 +44,19 @@ phases:
       - aws ecr get-login-password | docker login --username AWS --password-stdin "${REPOSITORY_URI%%/*}"
       - export KUBECONFIG=$HOME/.kube/config
       - echo `ls -l`
-      # Replaces pip install -r requirements.txt; includes the pytest development dependency.
+      # Includes the project's locked pytest development dependency.
       - uv sync --locked
       - uv run --locked python -m pytest test_main.py
   build:
     commands:
       - docker build --tag $REPOSITORY_URI:$TAG .
-      # Verify the same suite on the actual Python 3.7 Stretch runtime before publishing.
+      # Verify the same suite on the actual Python 3.13 runtime before publishing.
       # Test dependencies are installed only in this disposable container, not the runtime image.
       - >-
         docker run --rm --entrypoint sh
         --mount "type=bind,source=$PWD/test_main.py,target=/app/test_main.py,readonly"
-        --mount "type=bind,source=$PWD/requirements-dev.txt,target=/tmp/requirements-dev.txt,readonly"
         "$REPOSITORY_URI:$TAG"
-        -c 'python -m pip install --no-cache-dir -r /tmp/requirements-dev.txt && python -m pytest /app/test_main.py'
+        -c 'uv sync --locked && uv run --locked python -m pytest /app/test_main.py'
 
   post_build:
     commands:

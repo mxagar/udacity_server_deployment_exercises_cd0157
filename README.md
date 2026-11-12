@@ -17,7 +17,7 @@ Flask's development server is for local exploration. The Docker image runs the p
 ## Prerequisites
 
 - [Docker Desktop](https://docs.docker.com/desktop/), [Git](https://git-scm.com/downloads), and an editor such as [Visual Studio Code](https://code.visualstudio.com/download).
-- Python 3.13 and [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.13.7 or newer for host-side development/CodeBuild. The rubric-compatible Docker image uses Python 3.7.4 from `python:stretch`; the application and pinned requirements support that runtime too.
+- Python 3.13 and [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.13.7 or newer. Local development, Docker, and CodeBuild use Python 3.13 and the same uv lockfile.
 - A terminal: Bash on macOS/Linux or Git Bash/WSL; PowerShell is also supported below. Gunicorn runs on Windows through WSL or a Linux container.
 - For cloud deployment: an AWS account, [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [eksctl](https://docs.aws.amazon.com/eks/latest/eksctl/installation.html), and [kubectl](https://kubernetes.io/docs/tasks/tools/). Configure the appropriate AWS profile and keep exercise resources in a single supported region, such as `eu-central-1`.
 
@@ -97,9 +97,9 @@ It returns `"Healthy"`. Use `Ctrl+C` in the server terminal to stop it.
 
 ## Dependencies and tests
 
-`pyproject.toml` and `uv.lock` pin Python 3.7-compatible dependencies; `.python-version` selects Python 3.13 for host tooling. Docker literally uses `FROM python:stretch`, installs pinned [requirements.txt](./requirements.txt) with pip, and keeps `["gunicorn", "-b", ":8080", "main:APP"]`. The Stretch/Python 3.7 image is end-of-life and is retained here specifically for the historical course rubric.
+`pyproject.toml` requires Python 3.13 and `uv.lock` pins the dependencies. Docker uses `python:3.13-slim`, copies uv 0.13.7, and runs `uv sync --locked --no-dev --no-cache`. The runtime image contains the locked application dependencies; Gunicorn still runs as `["gunicorn", "-b", ":8080", "main:APP"]` on port 8080.
 
-[requirements-dev.txt](./requirements-dev.txt) adds the test tools. Both requirements files are exported from the same lock; CodeBuild runs the suite on its host Python and in a disposable container using the actual Stretch application image before publication.
+uv manages all Python dependencies; there are no requirements exports or pip installation steps. `uv sync --locked` includes the pytest development group. CodeBuild runs all 14 tests on its host and again in a disposable container using the actual application image before publication. Only that disposable test container installs the development group; the published image retains runtime dependencies only.
 
 ```bash
 uv run --locked pytest
@@ -110,20 +110,13 @@ uv sync --locked
 
 Commit `pyproject.toml` and `uv.lock` together after dependency changes. PyJWT 2 returns a string from `jwt.encode()`; do not append `.decode('utf-8')`. `jwt.decode()` remains the token-verification API.
 
-Regenerate the committed requirements files after changing the lock (Bash or PowerShell):
-
-```text
-uv export --locked --no-dev --no-hashes --no-header --no-annotate --no-emit-project --output-file requirements.txt
-uv export --locked --no-hashes --no-header --no-annotate --no-emit-project --output-file requirements-dev.txt
-```
-
-Reviewer-facing results and live API instructions are in [SUBMISSION.md](./SUBMISSION.md). A video recording is not required by the rubric reproduced in the companion guide; this submission uses the live URL and sanitized build/deployment evidence.
+The course submission passed before this runtime restoration. [SUBMISSION.md](./SUBMISSION.md) and the `resubmission-*` evidence preserve the accepted legacy snapshot. The current Python 3.13/uv verification is recorded separately in [runtime test output](./evidence/python313-uv-runtime-tests.txt), [local checks](./evidence/python313-uv-local-checks.json), and the companion guide's project activity log.
 
 ## Project files
 
 ```text
 .
-├── Dockerfile                  # Literal python:stretch, pip requirements, Gunicorn
+├── Dockerfile                  # Python 3.13 slim, locked uv dependencies, Gunicorn
 ├── .env.example                # Safe file-based local configuration template
 ├── README.md
 ├── .python-version
@@ -133,8 +126,6 @@ Reviewer-facing results and live API instructions are in [SUBMISSION.md](./SUBMI
 ├── iam-role-policy.json        # IAM permissions
 ├── main.py
 ├── pyproject.toml
-├── requirements.txt            # Pinned Python 3.7-compatible runtime requirements
-├── requirements-dev.txt        # Pinned requirements plus pytest
 ├── uv.lock
 ├── simple_jwt_api.yml
 ├── test_main.py                 # Regression tests; extend for the project
